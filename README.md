@@ -36,7 +36,12 @@ This project implements a microservices architecture with the following componen
 
 Create a `.env` file in the root directory:
 
-### 3. Running with Docker Compose
+### 3. Update submodules
+```bash
+git submodule update --init --recursive
+```
+
+### 4. Running with Docker Compose
 
 The easiest way to run all services:
 
