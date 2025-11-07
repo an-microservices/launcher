@@ -6,46 +6,41 @@ A microservices-based application built with NestJS, featuring a client gateway 
 
 This project implements a microservices architecture with the following components:
 
-- **Client Gateway**: API Gateway that handles HTTP requests and routes them to appropriate microservices
-- **Products Microservice**: Manages product catalog with SQLite database
-- **Orders Microservice**: Handles order processing with PostgreSQL database
-- **NATS Server**: Message broker for inter-service communication
+- `client-gateway` — HTTP API gateway (for clients / UI)
+- `products-ms` — Products microservice (SQLite / Prisma)
+- `orders-ms` — Orders microservice (Postgres / Prisma)
+- `auth-ms` — Authentication microservice (MongoDB / Prisma)
+- `payments-ms` — Payments microservice (Stripe integration)
 
-```
-┌─────────────────┐
-│  Client Gateway │ (Port 3000)
-│   HTTP/REST API │
-└────────┬────────┘
-         │
-         ├─── NATS (Port 8222)
-         │
-    ┌────┴─────────────────┐
-    │                      │
-┌───▼────────┐      ┌─────▼──────┐
-│ Products MS│      │ Orders MS  │
-│ (Port 3001)│      │ (Port 3002)│
-│  SQLite    │      │ PostgreSQL │
-└────────────┘      └────────────┘
-```
+Infrastructure services (via `docker-compose.yml` in repo root):
 
-## Getting Started
+- `nats-server` — NATS message broker (ports: 4222 client, 8222 monitoring)
+- `orders-db` / `postgres` — Postgres DB used by `orders-ms`
+- `auth-db` / `mongo` — MongoDB for `auth-ms` (can be configured as replica set)
 
-### 1. Clone the repository
+## Quick start (recommended)
 
-### 2. Environment Setup
+This starts all services using the root `docker-compose.yml`.
 
-Create a `.env` file in the root directory:
+```powershell
+# start everything (builds images if necessary)
+docker-compose up --build
 
-### 3. Update submodules
-```bash
-git submodule update --init --recursive
+# or run in background
+docker-compose up -d --build
+
+# follow logs
+docker-compose logs -f
 ```
 
-### 4. Running with Docker Compose
+After startup:
+- Client Gateway: http://localhost:3000 (unless overridden in `.env`)
+- NATS monitoring: http://localhost:8222
 
-The easiest way to run all services:
+If you need to reset volumes and start clean:
 
-```bash
+```powershell
+docker-compose down -v
 docker-compose up --build
 ```
 
@@ -83,7 +78,6 @@ npm run start:dev
 ```bash
 cd orders-ms
 npm install
-# Make sure PostgreSQL is running on localhost:5432
 npm run start:dev
 ```
 
